@@ -98,3 +98,103 @@ class PlaybackEvent:
     content_type: ContentType = ContentType.MOVIE
     
     position_seconds: int = 0
+    duration_seconds: int = 0 
+    video_quality: VideoQuality = VideoQuality.HD_1080P
+    audio_language: str = "en"
+    subtitle_language: Optional[str] = None
+    
+    device_type: DeviceType = DeviceType.WEB_DESTOP
+    platform_version: str = ""
+    app_version: str = ""
+    network_type: str = "wifi"
+    bandwidth_mbps: Optional[float] = None
+    
+    buffering_count: int = 0
+    buffering_duration_ms: int = 0
+    bitrate_kbps: int = 0
+    dropped_frames: int = 0
+    error_code: Optional[str] = None
+    
+    country: str = ""
+    region: str = ""
+    city: str = ""
+    timezone: str = "UTC"
+    
+    volume_level: int = 50
+    is_fullscreen: bool = False
+    playback_rate: float = 1.0 
+    
+    event_date: str = field(default_factory=lambda: datetime.utcnow().strftime("%Y-%m-%d"))
+    event_hour: int = field(default_factory=lambda: datetime.utcnow().hour)
+    ingestion_timestamp: datetime = field(default_factory=datetime.utcnow)
+    
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            'event_id': self.event_id,
+            'event_type': self.event_type.value,
+            'event_timestamp': self.event_timestamp.isoformat(),
+            'user_id': self.user_id,
+            'session_id': self.session_id,
+            'device_id': self.device_id,
+            'content_id': self.content_id,
+            'content_title': self.content_title,
+            'content_type': self.content_type.value,
+            'position_seconds': self.duration_seconds,
+            'video_quality': self.video_quality.value,
+            'audio_language': self.audio_language,
+            'subtitle_language': self.subtitle_language,
+            'device_type': self.device_type.value,
+            'platform_version': self.platform_version,
+            'app_version': self.app_version,
+            'network_type': self.network_type,
+            'bandwidth_mbps': self.bandwidth_mbps
+            'buffering_count': self.buffering_count,
+            'buffering_duration_ms': self.buffering_duration_ms,
+            'bitrate_kbps': self.bitrate_kbps,
+            'dropped_frames': self.dropped_frames,
+            'error_code': self.error_code,
+            'country': self.country,
+            'region': self.region,
+            'city': self.city,
+            'timezone': self.timezone,
+            'volume_level':self.volume_level,
+            'is_fullscreen': self.is_fullscreen,
+            'playback_rate': self.playback_rate,
+            'event_date': self.event_date,
+            'event_hour': self.event_hour,
+            'ingestion_timestamp': self.ingestion_timestamp.isoformat()
+        }
+        
+def to_json(self) -> str:
+    return json.dumps(self.to_dict())
+
+@dataclass
+class UserInteractionEvent:
+    """
+    Captures user interactions (search, browse, click, etc.)
+    Partition by: event_date, event_hour
+    """
+    event_id: str = field(default_factory=lambda: str(vvid.vvid4()))
+    event_type: EventType = EventType.BROWSE
+    event_timestamp: datetime = field(default_factory=datetime.utcnow)
+    
+    # User Context
+    user_id: str = ""
+    session_id: str = ""
+    device_id str = ""
+    
+    # Interaction details
+    page_url: str = ""
+    page_title: str = ""
+    referrer_url: Optional[str] = None
+    
+    # Element details (what was clicked/interacted with)
+    element_type: str = ""
+    element_id: Optional[str] = None
+    element_text: Optional[str] = None
+    element_position: Optional[int] = None
+    
+    # Search specific
+    search_query: Optional[str] = None
+    search_results_count: Optional[int] = None
+    search_result_clicked_position: Optional[int] = None
