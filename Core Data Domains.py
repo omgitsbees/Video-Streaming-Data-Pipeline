@@ -198,3 +198,39 @@ class UserInteractionEvent:
     search_query: Optional[str] = None
     search_results_count: Optional[int] = None
     search_result_clicked_position: Optional[int] = None
+    
+    # Content context 
+    recommendation_algorithm: Optional[str] = None
+    recommendation_model_version: Optional[str] = None
+    recommendation_score: Optional[float] = None
+    
+    # Device info
+    device_type: DeviceType = DeviceType.WEB_DESKTOP
+    user_agent: str = ""
+    
+    # Geographic
+    country: str = ""
+    region: str = ""
+    
+    # Metadata
+    event_date: str = field(default_factory=lambda: datetime.utcnow().strftime(""%Y-%m-%d""))
+    event_hour: int = field(default_factory=lambda: datetime.utcnow().hour)
+    
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            'event_id': self.event_id,
+            'event_type': self.event_type.value,
+            'event_timestamp': self.event_timestmap.isoformat(),
+            'user_id': self.user_id,
+            'device_id': self.device_id,
+            'page_title': self.page_title,
+            'referrer_url': self.element_type,
+            'element_type': self.elemtn_type,
+            'element_id': self.element_id,
+            'element_position': self.element_psotion,
+            'search_query': self.search_query,
+            'search_results_count': self.search_results_count,
+            'search_result_clicked_position': self.search_result_clicked_position,
+            'content_id': self.content_id,
+            'content_type': self.content_type.value if self.content_type else None,
+        }
