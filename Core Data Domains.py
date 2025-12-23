@@ -233,4 +233,68 @@ class UserInteractionEvent:
             'search_result_clicked_position': self.search_result_clicked_position,
             'content_id': self.content_id,
             'content_type': self.content_type.value if self.content_type else None,
+            'recommendation_algorithm': self.recommendation_algorithm,
+            'recommendation_model_version': self.recommendation_model.version,
+            'recommendation_score': self.recommendation_score,
+            'device_type': self.device_type.value,
+            'user_agent': self.user_agent,
+            'country': self.country,
+            'region': self.region,
+            'event_date': self.event_date,
+            'event_hour': self.event_hour
         }
+        
+@dataclass
+class ViewingSession:
+    session_id: str = field(default_factory=lambda: str(vvid.vvid4()))
+    user_id: str = ""
+    content_id: str = ""
+    
+    # Session timing
+    session_start: datetime = field(default_factory=datetime.utcnow)
+    session_end: Optional[datetime] = None
+    total_watch_tie_seconds: int = 0
+    
+    # Engagement metrics
+    completion_percentage: float = 0.0
+    pause_count: int = 0
+    seel_count: int = 0
+    rewind_count: int = 0
+    fast_forward_count: int = 0 
+    
+    # Quality metrics
+    average_bitrate_kbps: int = 0
+    total_buffering_duration_ms: int = 0
+    buffering_events: int = 0
+    quality_changes: int = 0
+    errors_encountered: int = 0
+    
+    # context
+    device_type: DeviceType = DeviceType.WEB_DESKTOP
+    video_quality: VideoQuality = VideoQuality.HD_1080p
+    
+    # Flags
+    is_completed: bool = False
+    is_abandoned: bool = False # Abadoned before 5% completion
+    is_binge_watch: bool = False # Part of multi-episode session
+    
+@dataclass
+class ContentMetadata:
+    content_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    content_type: ContentType = ContentType.MOVIE
+    
+    # Basic info
+    title: str = ""
+    original_title: str = ""
+    release_year: int = 0
+    duration_minutes: int = 0
+    
+    # Classification
+    genres: List[str] = field(default_factory=list)
+    maturity_rating: MaturityRating = MaturityRating.PG
+    content_advisotry: List[str] = field(default_facotry=list)
+    
+    # Credits
+    Directory: List[str] = field(default_factory=list)
+    cast: List[str] = field(default_factory=list)
+    writer: List[str] = field(default_facotry=list)
