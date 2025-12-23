@@ -298,3 +298,103 @@ class ContentMetadata:
     Directory: List[str] = field(default_factory=list)
     cast: List[str] = field(default_factory=list)
     writer: List[str] = field(default_facotry=list)
+    producer: List[str] = field(default_factory=list)
+    
+    # Description
+    synopsis_short: str = ""
+    synopsis_long: str = ""
+    tagline: Optional[str] = None
+    
+    # Media assets
+    poster_url: str = ""
+    backdrop_url: str = ""
+    thumbnail_url: str = ""
+    trailer_url: Optional[str] = None
+    
+    # Availability
+    available_countries: List[str] = field(default_factory=list)
+    available_languages: List[str] = field(default_facotry=list)
+    subtitle_languages: List[str] = field(default_facotry=list)
+    audio_formats: List[str] = field(default_facotry=list)
+    
+    # Quality Options
+    max_quality: VidoeQuality = VideoQuality.UHD_4K
+    supports_hdr: bool = False
+    supports_dolby_vision: bool = False
+    
+    # Rights and licensing
+    license_start_date: datetime = field(default_factory=datetime.utcnow)
+    license_end_date: Optional[datetime] = None
+    content_owner: str = ""
+    distribution_rights: List[str] = field(default_factory=list)
+    
+    # External IDs
+    imdb_id: Optional[str] = None
+    tmdb_id: Optional[str] = None
+    
+    # Metadata
+    created_at: datetime = field(default_factory=datetime.utcnow)
+    updated_at: datetime = field(default_factory=datetime.utcnow)
+    is_active: bool = True
+    is_featured: bool = False
+    is_original_content: bool = False
+    
+@dataclass 
+class TVSeriesMetadata:
+    # TV series specific metadata
+    series_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    title: str = ""
+    
+    # Series info
+    total_seasons: int = 0
+    total_episodes: int = 0
+    status: str = "ongoing"
+    
+    # Metadata
+    first_air_date: datetime = field(default_factory=datetime.utcnow)
+    last_air_date: Optional[datetime] = None
+    
+    # Link to base content
+    base_content_id: str = ""
+    
+@dataclass
+class QoSTelemtry:
+    # Quality of Service telemetry - granular playback quality metrics
+    telemetry_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    
+    # Session context
+    session_id: str = ""
+    user_id: str = ""
+    content_id: str = ""
+    
+    # Video quality
+    current_bitrate_kbps: int = 0
+    current_resolution: VideoQuality = VideoQuality.HD_1080p
+    measured_bandwidth_mbps: float = 0.0
+    
+    # Buffer metrics (sampled every 10 seconds)
+    buffer_level_seconds: float = 0.0
+    is_buffering: bool = False
+    buffering_duration_ms: int = 0
+    
+    # Frame metrics
+    frames_rendered: int = 0
+    frames_dropped: int = 0
+    frames_corrupted: int = 0
+    
+    # Adaptive streaming
+    quality_switch_count: int = 0
+    last_quality_switch_reason: Optional[str] = None
+    
+    # Network
+    network_type: str = "wifi"
+    latency_ms: Optional[int] = None
+    packet_loss_percentage: Optional[float] = None
+    
+    # CDN
+    cdn_server: str = ""
+    cdn_cache_hit: bool = True
+    
+    # Errors
+    error_code: Optional[str] = None
