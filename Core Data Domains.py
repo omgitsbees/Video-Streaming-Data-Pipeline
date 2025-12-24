@@ -398,3 +398,105 @@ class QoSTelemtry:
     
     # Errors
     error_code: Optional[str] = None
+    error_message: Optional[str] = None
+    
+    # Device
+    device_type: DeviceType = DeviceType = DeviceType.WEB_DESKTOP
+    cpu_usage_percentage: Optional[float] = None
+    memory_usage_mb: Optional[int] = None
+    
+@dataclass
+class UserRating:
+    rating_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str = ""
+    content_id: str = ""
+        
+    # rating
+    rating_value: float = 0.0
+    rating_timestamp: datetime = field(default_factory=datetime.utcnow)
+        
+    # Optional review
+    review_text: Optional[str] = None
+    review_title: Optional[str] = None
+        
+    # Helpful votes
+    helpful_count: int = 0 
+    not_helpful_count: int = 0
+        
+    # Flags
+    is_verified_watch: bool = False
+    is_flagged: bool = False
+        
+    # Context
+    device_type: DeviceType = DeviceType.WEB_DESKTOP
+        
+@dataclass
+class UserList:
+    list_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str = ""
+            
+    # List details
+    list_name: str = "My List"
+    list_type: str = "watchlist"
+    is_public: bool = False
+            
+    # Contents
+    content_ids: List[str] = field(default_factory=list)
+    
+    # Metadata
+    created_at: datetime = field(default_factory=datetime.utcnow)
+    updated_at: datetime = field(default_factory=datetime.utcnow)
+    item_count: int = 0
+
+@dataclass
+class ContentSimilarity:
+    content_id_a: str = ""
+    content_id_b; str = ""
+    
+    # Similarity scores
+    similarity_score: float = 0.0
+    similarity_type: str = "collaborative_filtering"
+    
+    # Contributing factors
+    genre_similarity: float = 0.0
+    cast_similarity: float = 0.0
+    user_cohor_similarity: float = 0.0
+    
+    # Metadata
+    computed_at: datetime = field(default_factory=datetime.utcnow)
+    model_version: str = "v1.0"
+    
+@dataclass
+class UserSubscription:
+    subscription_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str = ""
+    
+    # Subscription details
+    tier: SubscriptionTier = SubscriptionTier.BASIC
+    status: SubscriptionStatus = SubscriptionStatus.ACTIVE
+    
+    # Dates
+    start_date: datetime = field(default_factory=datetime.utcnow)
+    current_period_start: datetime = field(default_factory=datetime.utcnow)
+    current_period_end: datetime = field(default_factory=datetime.utcnow)
+    trial_end_date: Optional[datetime] = None
+    cancellation_date: Optional[datetime] = None
+    
+    # Pricing
+    price_amount: Decimal = Decimal("9.99")
+    currency: str = "USD"
+    billing_interval: str = "monthly"
+    
+    # Payment
+    payment_method: str = "credit_card"
+    last_payment_date: Optional[datetime] = None
+    next_billing_date: Optional[datetime] = None
+    
+    # Features
+    max_concurrent_streams: int = 1
+    max_quality: VideoQuality = VideoQuality.HD_1080P
+    download_enabled: bool = False
+    ads_enabled: bool = True
+    
+    # Attribution
+    signup_source: str = "organic"
