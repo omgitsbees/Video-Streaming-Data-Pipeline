@@ -500,3 +500,101 @@ class UserSubscription:
     
     # Attribution
     signup_source: str = "organic"
+    promo_code: Optional[str] = None
+    referrer_user_id: Optional[str] = None
+    
+@dataclass
+class PaymentTransaction:
+    transaction_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    subscription_id: str = ""
+    user_id: str = ""
+    
+    # Transaction details
+    amount: Decimal = Decimal("0.00")
+    currency: str = "USD"
+    transaction_type: str = "charge"
+    status: str = "success"
+    
+    # Payment details
+    payment_method: str = "credit_card"
+    payment_processor: str = "stripe"
+    processor_transaction_id: str = ""
+    
+    # timing
+    transaction_date: datetime = field(default_factory=datetime.utcnow)
+    settlement_date: Optional[datetime] = None
+    
+    # Failure info
+    failure_code: Optional[str] = None
+    failure_message: Optional[str] = None
+    retry_count: int = 0
+    
+@dataclass
+class ExperimentExposure:
+    exposure_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    experiment_id: str = ""
+    experiment_name: str = ""
+    
+    # User and variant
+    user_id: str = ""
+    variant: ExperimentVariant = ExperimentVariant.CONTROL
+    
+    # Context
+    exposure_timestamp: datetime = field(default_factory=datetime.utcnow)
+    device_type: DeviceType = DeviceType.WEB_DESKTOP
+    user_segment: Optional[str] = None
+    
+    # Experiment config
+    experiment_state_date: datetime = field(default_factory=datetime.utcnow)
+    experiment_end_date: Optional[datetime] = None
+    traffic_allocation: float = 0.5
+    
+@dataclass
+class ExperimentMetric:
+    metric_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    experiment_id: str = ""
+    variant: ExperimentVariant = ExperimentVariant.CONTROL
+    
+    # Metric details 
+    metric_name: str = ""
+    metric_value: float = 0.0
+    metric_type: str = "mean"
+    
+    # Statistical significance
+    sample_size: int = 0
+    standard_error: Optional[float] = None
+    confidence_interval_lower: Optional[float] = None
+    confidence_interval_upper: Optional[float] = None
+    p_value: Optional[float] = None
+    
+    # Comparison to control
+    lift_percentage: Optional[float] = None
+    is_statistically_significant: bool = False
+    
+    # Metadata
+    computation_date: datetime = field(default_factory=datetime.utcnow)
+    aggregation_window: str = "7d"
+    
+@dataclass
+class ErrorEvent:
+    error_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    error_timestamp: datetime = field(default_factory=datetime.utcnow)
+    
+    # Error details
+    error_type: str = ""
+    error_code: str = ""
+    error_message: str = ""
+    severity: str = "error"
+    
+    # Context
+    user_id: Optional[str] = None
+    session_id: Optional[str] = None
+    content_id: Optional[str] = None
+    
+    # Technical details
+    stack_trace: Optional[str] = None
+    request_id: Optional[str] = None
+    api_endpoint: Optional[str] = None
+    
+    # Device/environment
+    device_type: Optional[DeviceType] = None
