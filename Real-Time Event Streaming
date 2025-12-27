@@ -1,0 +1,100 @@
+import json
+import logging
+from typing import Optional, Dict, Any, List, Callable
+from dataclasses import asdict
+from datetime import datetime
+from enum import Enum
+import hashlib
+
+# real-time event srteaming infrastructure
+# Kafka-based streaming with avro serialization, schema registry, and producers/consumers
+
+# Kafka imports
+from confluent_kafka import Producer, Consumer, KafkaError, KafkaException
+from confluent_kafka.admin import AdminClient, NewTopic
+from confluent_kafka.serialization import (
+    SerializationContext, MessageField, StringSerializer, StringDeserializer
+)
+from confluent_kafka.schema_registry import SchemaRegistryClient
+from confluent_kafka.schema_registry.avro import AvroSerializer, AvroDeserializer
+
+# Import data models
+from core_data_domains import (
+    PlaybackEvent, UserInteractionEvent, QoSTelemtry,
+    UserRating, ExperimentExposure, ErrorEvent, EventType
+)
+
+logging.basicConfig(level=loggin.INFO)
+logger = logging.getLogger(__name__)
+
+# Kafka Topic Configuration
+
+class KafkaTopics(Enum):
+# all kafka topics in the system
+    PLAYBACK_EVENTS = "streaming.playback.events"
+    USER_INTERACTIONS = "streaming.user.interactions"
+    QOS_TELEMETRY = "streaming.qos.telemetry"
+    USER_RATINGS = "streaming.user.ratings"
+    EXPERIMENT_EXPOSURES = "streaming.experiments.exposures"
+    ERROR_EVENTS = "streaming.errors.events"
+    SESSION_EVENTS = "streaming.sessions.events"
+    SEARCH_EVENTS = "streaming.search.events"
+    
+    # Processed/aggregated topics
+    VIEWING_SESSIONS = "processed.viewing.sessions"
+    USER_PROFILES_UPDATES = "processed.user.profiles"
+    CONTENT_METRICS = "processed.content.metrics"
+    REAL_TIME_FEATURES = "ml.features.realtime"
+    
+class TopicConfig:
+    # Topic configuration templates
+    # high-throughput, critical topics
+    CRITICAL_CONFIG = {
+        'num_partitions': 50,
+        'replication_factor': 3,
+        'config': {
+            'compression.type': 'lz4',
+            'min.insync.replicas': '2',
+            'retention.ms': '604800000', # 7 days
+            'segment.ms': '3600000', # 1 hour
+            'cleanup.policy': 'delete',
+            'max.messgae.bytes': '1048576', # 1 MB
+        }
+    }
+    
+    # Standard topics
+    STANDARD_CONFIG = {
+        'num_partitions': 20,
+        'replication_factor': 3,
+        'config': {
+            'compression.type': 'snappy',
+            'min.insync.replicas': '2',
+            'retention.ms': '2592000000', # 30 days
+            'segment.ms': '3600000',
+            'cleanup.policy': 'delete',
+        }
+    }
+    
+    # Low-volume, long retention topics
+    ANALYTICS_CONFIG = {
+        'num_partitions': 10,
+        'replication_factor': 3,
+        'config': {
+            'compression.type': 'snappy',
+            'min.insync.replicas': '2',
+            'retention.ms': '7776000000', # 90 days
+            'segment.ms': '86400000', # 24 hours
+            'cleanup.polcy': 'delete',
+        }
+    }
+    
+# AVRO SCHEMAS
+
+class AvroSchemas:
+    """Avro schema definitions for all event types"""
+    
+    PLAYBACK_EVENT_SCHEMA = """
+    {
+        "type": "record",
+        "name": "PlaybackEvent",
+    }
