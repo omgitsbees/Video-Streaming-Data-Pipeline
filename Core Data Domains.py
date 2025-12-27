@@ -598,3 +598,126 @@ class ErrorEvent:
     
     # Device/environment
     device_type: Optional[DeviceType] = None
+    app_version: str = ""
+    platform_version: str = ""
+    
+    # Network
+    network_type: Optional[str] = None
+    cdn_server: Optional[str] = None
+    
+    # Resolution
+    is_resolved: bool = False
+    resolution_time: Optional[datetime] = None
+    
+@dataclass
+class WatchPartSession:
+    party_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    host_user_id: str = ""
+    content_ud: str = ""
+    
+    # Session details
+    start_time: datetime = field(default_factory=datetime.utcnow)
+    end_time: Optional[datetime] = None
+    
+    # Participants
+    participant_user_ids: List[str] = field(default_factory=list)
+    max_participants: int = 0
+    
+    # Synchronization
+    current_position_seconds: int = 0
+    is_playing: bool = False
+    
+    # Chat
+    message_count: int = 0
+    
+    # Flags
+    is_active: bool = True
+    
+class DataValidator:
+    # Vaidation utilities for data domains
+    
+    @staticmethod
+    def validate_playback_event(event: PlaybackEvent) -> List[str]:
+        # Validate playback event and return list of errors
+        errors = []
+        
+        if not event.user_id:
+            errors.append("user_id is required")
+            
+        if not event.content_id:
+            errors.append("content_id is required")
+            
+        if event.position_seconds < 0:
+            errors.append("position_seconds cannot be negative")
+            
+        if event.duration_seconds <= 0:
+            errors.append("duration_seconds must be positive")
+            
+        if event.position_seconds > event.duration_seconds:
+            errors.append("position_seconds cannot exceed duration_seconds")
+            
+        if event.volume_level < 0 or event.volume_level > 100:
+            errors.append("position_seconds cannot exceed duration_seconds")
+            
+        if event.volume_level < 0 or event.volume_level > 100:
+            errors.append("volume_level must be between 0 and 100")
+            
+        if event.playback_rate < 0.25 or event.playback_rate > 3.0:
+            errors.append("playback_rate out of valid range (0.25-3.0)")
+            
+        return errors
+    
+@staticmethod
+def validate_user_subscription(sub: UserSubscription) -> List[str]:
+    # Validate subscription and return list of errors
+    errors = []
+    
+    if not sub.user_id:
+        errors.append("user_id is required")
+        
+        if sub.price_aount < 0:
+            errors.append("price_amount cannot be negative")
+            
+        if sub.current_period_end < sub.current_period_start:
+            errors.append("current_period_end must be after current_period_start")
+            
+        if sub.max_concurrent_streams < 1:
+            errors.append("max_concurrent_streams must be at least 1")
+            
+        return erros
+    
+if __name__ == "__main__"
+    # Example: Create a playback event
+    event = PlaybackEvent (
+        user_id="user_12345",
+        session_id="session_abc",
+        device_id="device_xyz",
+        content_id="movie_001",
+        content_title="The Great Film",
+        content_type=ContentType.MOVIE,
+        position_seconds=300,
+        duratio_seconds=7200,
+        video_quaity=VideoQuality.UHD_4K,
+        device_type=DeviceType.TV_SMART_TV,
+        country="US",
+        region="CA"
+    )
+    
+    # Validate
+    errors = DataValidator.validate_playback_event(event)
+    if errors:
+        print("Validation errors:", errors)
+    else:
+        print("Event is valid!")
+        print(json.dumps(event.to_dict(), indent=2))
+        
+    # Example: Create content metadata
+    content = ContentMetadata(
+        content_id="movie_001",
+        content_type=ContenType.MOVIE,
+        title="The Great Film",
+        release_year=2024,
+        duration_minutes=120,
+        genres=["Action", "Thriller"],
+        maturity_rating=MaturityRating.P
+    )
